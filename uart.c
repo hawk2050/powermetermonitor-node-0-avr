@@ -75,7 +75,7 @@ static volatile unsigned char UART1_LastRxError;
 
 
 
-SIGNAL(UART0_RECEIVE_INTERRUPT)
+ISR(UART0_RECEIVE_INTERRUPT)
 {
     unsigned char tmphead;
     unsigned char data;
@@ -151,7 +151,7 @@ SIGNAL(UART0_RECEIVE_INTERRUPT)
 #else
 
 
-SIGNAL(UART0_RECEIVE_INTERRUPT)
+ISR(UART0_RECEIVE_INTERRUPT)
 /*************************************************************************
 Function: UART Receive Complete interrupt
 Purpose:  called when the UART has received a character
@@ -203,7 +203,7 @@ otherwise a new interrupt will occur once the interrupt routine terminates.
 #endif 
 
 
-SIGNAL(UART0_TRANSMIT_INTERRUPT)
+ISR(UART0_TRANSMIT_INTERRUPT)
 /*************************************************************************
 Function: UART Data Register Empty interrupt
 Purpose:  called when the UART is ready to transmit the next byte
@@ -404,17 +404,13 @@ void uart_puts_p(const char *progmem_s )
 
 
 
-
-
-
-
 /*
  * these functions are only for ATmegas with two USART
  */
 
 #if defined( ATMEGA_USART1 )
 
-SIGNAL(UART1_RECEIVE_INTERRUPT)
+ISR(UART1_RECEIVE_INTERRUPT)
 /*************************************************************************
 Function: UART1 Receive Complete interrupt
 Purpose:  called when the UART1 has received a character
@@ -449,7 +445,7 @@ Purpose:  called when the UART1 has received a character
 }
 
 
-SIGNAL(UART1_TRANSMIT_INTERRUPT)
+ISR(UART1_TRANSMIT_INTERRUPT)
 /*************************************************************************
 Function: UART1 Data Register Empty interrupt
 Purpose:  called when the UART1 is ready to transmit the next byte

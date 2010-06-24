@@ -83,6 +83,10 @@
 	#define TIMSK1	TIMSK
 #endif
 
+#ifdef __AVR_ATmega328P__
+	#define TCCR0 TCCR0A
+#endif
+
 
 #ifndef PWM10
 	// mega128 PWM bits

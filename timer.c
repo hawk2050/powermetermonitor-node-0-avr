@@ -188,7 +188,7 @@ u16 timerTicsToMs(u32 tics)
 	// calculate the number of milliseconds in x timer tics
 	return (tics*1000*(prescaleDiv*256))/F_CPU;
 }
-*/
+
 
 #if 0
 void timerPause(unsigned short pause_ms)
@@ -254,7 +254,7 @@ long timer0GetOverflowCount(void)
 
 
 //! Interrupt handler for tcnt0 overflow interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW0)
+ISR(TIMER0_OVF_vect)
 {
 	Timer0Reg0++;			// increment low-order counter
 
@@ -269,7 +269,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW0)
 
 
 //! Interrupt handler for tcnt1 overflow interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW1)
+ISR(TIMER1_OVF_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER1OVERFLOW_INT])
@@ -281,7 +281,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW1)
 #ifdef OCR0
 // include support for Output Compare 0 for new AVR processors that support it
 //! Interrupt handler for OutputCompare0 match (OC0) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE0)
+ISR(TIMER0_COMP_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER0OUTCOMPARE_INT])
@@ -290,7 +290,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE0)
 #endif
 
 //! Interrupt handler for CutputCompare1A match (OC1A) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE1A)
+ISR(TIMER1_COMPA_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER1OUTCOMPAREA_INT])
@@ -298,7 +298,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE1A)
 }
 
 //! Interrupt handler for OutputCompare1B match (OC1B) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE1B)
+ISR(TIMER1_COMPB_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER1OUTCOMPAREB_INT])
@@ -306,7 +306,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE1B)
 }
 
 //! Interrupt handler for InputCapture1 (IC1) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_INPUT_CAPTURE1)
+ISR(TIMER1_CAPT_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER1INPUTCAPTURE_INT])
