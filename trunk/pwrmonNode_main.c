@@ -23,7 +23,7 @@
 #include "timer.h"
 
 #include "uart.h"		// include uart function library
-#include "uartsw_tx.h"
+//#include "uartsw_tx.h"
 #include "serialcommand_rcc.h"
 
 //u08 UART_NL[] = {0x0d,0x0a,0};
@@ -37,11 +37,11 @@
 
 
 // defines
-#define LED_DDR  DDRB
-#define LED_PORT PORTB
-#define LED_PIN  PINB
-#define LED3     PINB3
-#define LED4     PINB5
+#define LED_DDR  DDRD
+#define LED_PORT PORTD
+#define LED_PIN  PIND
+#define LED1     PIND3
+
 
 /*INT0 is on PORTD, PD2*/
 #define PULSE_INT DDRD
@@ -136,9 +136,7 @@ int main(void)
      *  UART_BAUD_SELECT_DOUBLE_SPEED() ( double speed mode)
      */
     uart_init( UART_BAUD_SELECT(UART_BAUD_RATE,F_CPU) ); 
-#if UART_MODE==SW_UART_TX
-	uartswInit_Tx();
-#endif
+
 	// initialize the timer system, enables global interrupts.
 	
 	//timer1Init();
@@ -192,11 +190,11 @@ int main(void)
     /*
      * Transmit string from program memory to UART
      */
-    //uart_puts_P("PowerMeterMonitor\r\n");
-	uartswSendByte("G");
+    uart_puts_P("PowerMeterMonitor\r\n");
+	
 
 	/*CSV Column headings*/
-	//uart_puts_P("(totalCount,Avged Interval, Min Interval)\r\n");
+	uart_puts_P("(totalCount,Avged Interval, Min Interval)\r\n");
     
   
 
@@ -380,7 +378,7 @@ void ports_init()
 	PORTD = (1 << PD2);
 	DDRD = DDRD & ~_BV(PIND2);
 }
-#elif defined (__AVR_ATmega168__)
+#elif defined (__AVR_ATmega328P__)
 void ports_init()
 {
 	// External Interrupt Control Register A,
@@ -388,17 +386,15 @@ void ports_init()
   	EICRA = (1<<ISC01) | (1<<ISC00);
 	//MCUCR = (1<<ISC01);
 
-  	// turn on external interrupt 0!
+  	// turn on external interrupt 0, PD2 on ATMega328P, Pin 4, (D0, Pin 15 on DT107a SIMMBUS connector)
   	EIMSK  = _BV(INT0);
 
 
-	// set LED pin to output and switch on LED
-    LED_DDR |= _BV(LED3);
-    LED_PORT &= ~_BV(LED3);
+	// set LED pin to output and switch on LED connected to PD3 on AVR, (D1, Pin 4 on DT107a SIMMBUS connector)
+    LED_DDR |= _BV(LED1);
+    LED_PORT &= ~_BV(LED1);
 
-	LED_DDR |= _BV(LED4);
-    LED_PORT &= ~_BV(LED4);
-
+	
 	/*Configure PD2 with weak pull up, helps prevent glitching from external EMI and glitches*/
 	PORTD = (1 << PD2);
 	DDRD = DDRD & ~_BV(PIND2);
@@ -406,7 +402,7 @@ void ports_init()
 #endif		
 
 /*External pulse interrupt on PD2*/
-SIGNAL (SIG_INTERRUPT0)
+ISR(INT0_vect)
 { 
     
 	
@@ -429,14 +425,14 @@ SIGNAL (SIG_INTERRUPT0)
 	
 	sei();
 
-	LED_PORT = LED_PORT ^ _BV(LED4);	//toggle LED
+	LED_PORT = LED_PORT ^ _BV(LED1);	//toggle LED
 
 }
 
 
 /*service timer1 interrupts*/
 #if 0
-SIGNAL (SIG_OVERFLOW1)     /* signal handler for Timer 1 over flow*/
+ISR(TIMER1_OVF_vect)     /* signal handler for Timer 1 over flow*/
 {
 /*The timer is in free run when it rolls over time has passed.
 Increment roll over counter, An interrupt comes every second.

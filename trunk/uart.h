@@ -194,11 +194,12 @@ LICENSE:
  #define UART0_CONTROL  UCSRB
  #define UART0_DATA     UDR
  #define UART0_UDRIE    UDRIE
-#elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__)
+#elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) ||\
+		defined(__AVR_ATmega328P__)
  /* ATmega with one USART */
  #define ATMEGA_USART0_xx8
- #define UART0_RECEIVE_INTERRUPT   SIG_USART_RECV
- #define UART0_TRANSMIT_INTERRUPT  SIG_USART_DATA
+ #define UART0_RECEIVE_INTERRUPT   USART_RX_vect
+ #define UART0_TRANSMIT_INTERRUPT  USART_TX_vect
  #define UART0_STATUS   UCSR0A
  #define UART0_CONTROL  UCSR0B
  #define UART0_DATA     UDR0
