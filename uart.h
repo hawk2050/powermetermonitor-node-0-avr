@@ -109,28 +109,8 @@ LICENSE:
 #error TX buffer size is not a power of 2
 #endif
 
-#if defined(__AVR_AT90S2313__) \
- || defined(__AVR_AT90S4414__) || defined(__AVR_AT90S4434__) \
- || defined(__AVR_AT90S8515__) || defined(__AVR_AT90S8535__) \
- || defined(__AVR_ATmega103__)
- /* old AVR classic or ATmega103 with one UART */
- #define AT90_UART
- #define UART0_RECEIVE_INTERRUPT   SIG_UART_RECV
- #define UART0_TRANSMIT_INTERRUPT  SIG_UART_DATA
- #define UART0_STATUS   USR
- #define UART0_CONTROL  UCR
- #define UART0_DATA     UDR  
- #define UART0_UDRIE    UDRIE
-#elif defined(__AVR_AT90S2333__) || defined(__AVR_AT90S4433__)
- /* old AVR classic with one UART */
- #define AT90_UART
- #define UART0_RECEIVE_INTERRUPT   SIG_UART_RECV
- #define UART0_TRANSMIT_INTERRUPT  SIG_UART_DATA
- #define UART0_STATUS   UCSRA
- #define UART0_CONTROL  UCSRB
- #define UART0_DATA     UDR 
- #define UART0_UDRIE    UDRIE
-#elif  defined(__AVR_ATmega8__)  || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__) \
+
+#if  defined(__AVR_ATmega8__)  || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__) \
   || defined(__AVR_ATmega8515__) || defined(__AVR_ATmega8535__) \
   || defined(__AVR_ATmega323__)
   /* ATmega with one USART */

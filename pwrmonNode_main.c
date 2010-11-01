@@ -23,17 +23,12 @@
 #include "timer.h"
 
 #include "uart.h"		// include uart function library
-//#include "uartsw_tx.h"
 #include "serialcommand_rcc.h"
 
 //u08 UART_NL[] = {0x0d,0x0a,0};
 
 #define SMALL_MEMORY 0
 #define DEBUG_SERIAL 1
-#define SW_UART_TX	 2
-#define HW_UART_TX	 3
-
-#define UART_MODE SW_UART_TX
 
 
 // defines
@@ -97,8 +92,6 @@ uint16_t localTimerTicksAvg;
 
 /*The number of LED pulses between sending latest measurements out serial port*/
 uint8_t averageWindow;
-
-
 uint16_t pulse_ticker;
 uint16_t minTickError;
 
@@ -135,23 +128,18 @@ int main(void)
      *  or 
      *  UART_BAUD_SELECT_DOUBLE_SPEED() ( double speed mode)
      */
-    uart_init( UART_BAUD_SELECT(UART_BAUD_RATE,F_CPU) ); 
+    //uart_init( UART_BAUD_SELECT(UART_BAUD_RATE,F_CPU) ); 
+	uart_init(UART_BAUD_RATE);
 
 	// initialize the timer system, enables global interrupts.
 	
 	//timer1Init();
 	/*Timer clocked at F_CPU/1024*/
-#if SMALL_MEMORY
-	/* Set up timer 1, 16 bit timer, use prescaler of 1024*/
-	TCCR1B |= (1 << CS12) | (0 << CS11) | (1 << CS10); 
 
-	/* Enable Timer1 overflow interrupt*/
-	TIMSK1 |= (1 << TOIE1);  
-#else
 	timer1SetPrescaler(TIMER_CLK_DIV1024);
 	cbi(TIMSK1, TOIE1);						// disable TCNT1 overflow
 	//timerAttach(1, myTimer1IntHandler );
-#endif
+
 	timerRollOverFlag = 0;
 	externalPulseFlag = 0;
 	/*Counts the pulses from the LED pulse detector, after every 160 increment the 
@@ -356,29 +344,7 @@ void sendTotalCount()
 }
 #endif
 
-#if defined (__AVR_ATtiny2313__)
-void ports_init()
-{
-	// interrupt on INT0 pin rising edge (sensor triggered) 
-  	MCUCR = (1<<ISC01) | (1<<ISC00);
-	//MCUCR = (1<<ISC01);
 
-  	// turn on interrupt 0!
-  	GIMSK  = _BV(INT0);
-
-
-	// set LED pin to output and switch on LED
-    LED_DDR |= _BV(LED3);
-    LED_PORT &= ~_BV(LED3);
-
-	LED_DDR |= _BV(LED4);
-    LED_PORT &= ~_BV(LED4);
-
-	/*Configure PD2 with weak pull up, helps prevent glitching from external EMI and glitches*/
-	PORTD = (1 << PD2);
-	DDRD = DDRD & ~_BV(PIND2);
-}
-#elif defined (__AVR_ATmega328P__)
 void ports_init()
 {
 	// External Interrupt Control Register A,
@@ -398,8 +364,7 @@ void ports_init()
 	/*Configure PD2 with weak pull up, helps prevent glitching from external EMI and glitches*/
 	PORTD = (1 << PD2);
 	DDRD = DDRD & ~_BV(PIND2);
-}
-#endif		
+}		
 
 /*External pulse interrupt on PD2*/
 ISR(INT0_vect)
@@ -425,7 +390,7 @@ ISR(INT0_vect)
 	
 	sei();
 
-	LED_PORT = LED_PORT ^ _BV(LED1);	//toggle LED
+	//LED_PORT = LED_PORT ^ _BV(LED1);	//toggle LED
 
 }
 
@@ -448,7 +413,7 @@ void myTimer1IntHandler(void)
 /*The timer is in free run when it rolls over time has passed.
 Increment roll over counter.  This timer is incrementing at a rate of F_CPU/timer1GetPrescaler(),
 which makes it 3600Hz with F_CPU = 3686400Hz, and prescaler of 1024.*/
-	LED_PORT = LED_PORT ^ _BV(LED3);	//toggle LED
+	LED_PORT = LED_PORT ^ _BV(LED1);	//toggle LED
 	timerRollOverFlag = 1;
 
 	
